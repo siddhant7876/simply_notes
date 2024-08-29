@@ -1,0 +1,456 @@
+// import React, { useState, useEffect ,useCallback} from 'react';
+// import { BrowserRouter as Router, Route, Switch, useNavigate } from 'react-router-dom';
+// import './App.css';
+// import axios from 'axios';
+// import config from './config';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faBars, faHome, faFolderPlus, faFolderOpen, faSignInAlt, faUserPlus, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+
+
+// const App=() =>{
+//     const [token, setToken] = useState(localStorage.getItem('token'));
+//     const [view, setView] = useState('login');
+//     const [directories, setDirectories] = useState([]);
+//     const [noteId, setNoteId] = useState(null);
+//     const [images, setImages] = useState([]);
+//     const [username, setUsername] = useState('');
+//     const [password, setPassword] = useState('');
+//     const [message, setMessage] = useState('');
+//     const [notes, setNotes] = useState([]); // Add this line
+//     const [directoryId, setDirectoryId] = useState(null); 
+//     const [sidebarOpen, setSidebarOpen] = useState(true);
+//     const navigate = useNavigate();
+
+//     const updateNavBar = useCallback(() => {
+//       if (token) {
+//         //   setView('home');
+//         navigate('/home');
+//       } else {
+//         //   setView('login');
+//         navigate('/login');
+//       }
+//   }, [token,navigate]);
+
+
+//   const fetchDirectories = useCallback(async () => {
+//     if (token) {
+//         try {
+//             const response = await axios.get(`${config.baseURL}/directories/directories`, {
+//                 headers: {
+//                     Authorization: `Bearer ${token}`
+//                 }
+//             });
+//             setDirectories(response.data);
+//         } catch (error) {
+//             console.error('Failed to fetch directories', error);
+//         }
+//     }
+// }, [token]);
+
+//     useEffect(() => {
+//         updateNavBar();
+//         if (token) {
+//             fetchDirectories();
+//         }
+//     }, [token,updateNavBar, fetchDirectories]);
+
+//     const handleNavClick = (targetView) => {
+//       if (targetView === 'logout') {
+//           localStorage.removeItem('token');
+//           setToken(null);
+//         //   setView('login');
+//         navigate('/login');
+//       } else {
+//         //   setView(targetView);
+//         navigate(`/${targetView}`);
+//       }
+//   };
+
+//     const handleRegister = async (e) => {
+//         e.preventDefault();
+//         try{
+//           const response = await axios.post(`${config.baseURL}/auth/register`, { username, password });
+//           setMessage(response.data.message); 
+//         } catch(error){
+//           setMessage('Regsitration failed');
+//         }
+//     };
+
+//     const handleLogin = async (e) => {
+//       e.preventDefault();
+//       try {
+//           const response = await axios.post(`${config.baseURL}/auth/login`, { username, password });
+//           if (response.status === 200) {
+//               setMessage('Login successful');
+//               localStorage.setItem('token', response.data.access_token);
+//               setToken(response.data.access_token);
+//             //   setView('home');
+//             navigate('/home');
+//           } else {
+//               setMessage('Login failed');
+//           }
+//       } catch (error) {
+//           setMessage('Login failed');
+//       }
+//   };
+
+
+
+//     const handleCreateDirectory = async (e) => {
+//       e.preventDefault();
+//       const directoryName = e.target.elements['directory-name'].value;
+//       try {
+//           const response = await axios.post(`${config.baseURL}/directories/create-directory`, { name: directoryName }, {
+//               headers: {
+//                   Authorization: `Bearer ${token}`
+//               }
+//           });
+//           if (response.status === 200) {
+//               alert('Directory created successfully');
+//               fetchDirectories();
+//           } else {
+//               alert(response.data.message);
+//           }
+//       } catch (error) {
+//           alert('Directory creation failed');
+//       }
+//   };
+//   const handleViewDirectory = async (directoryId) => {
+//     try {
+//         const response = await axios.get(`${config.baseURL}/directories/directories/${directoryId}/notes`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         });
+//         if (response.status === 200) {
+//             setNotes(response.data.notes);
+//             setDirectoryId(directoryId);
+//             setView('view-notes');
+//         } else {
+//             alert('Failed to fetch notes');
+//         }
+//     } catch (error) {
+//         alert('Failed to fetch notes');
+//     }
+// };
+//   const handleDeleteDirectory = async (directoryId) => {
+//     try {
+//         const response = await axios.delete(`${config.baseURL}/directories/directories/${directoryId}`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         });
+//         if (response.status === 200) {
+//             alert('Directory deleted successfully');
+//             // Update the state to remove the deleted directory from the list
+//             setDirectories(directories.filter(directory => directory.id !== directoryId));
+//             // Clear the notes and images if the deleted directory was the currently viewed directory
+//             if (directoryId === noteId) {
+//                 setImages([]);
+//                 setNoteId(null);
+//                 setView('view-directories');
+//             }
+//         } else {
+//             alert('Failed to delete directory');
+//         }
+//     } catch (error) {
+//         alert('Failed to delete directory');
+//     }
+// };
+
+
+
+
+//     const fetchImages = async (noteId) => {
+//       try {
+//           const response = await axios.get(`${config.baseURL}/images/images/${noteId}`, {
+//               headers: {
+//                   'Authorization': `Bearer ${token}`
+//               }
+//           });
+//           if (response.status === 200) {
+//               setImages(response.data);
+//             //   console.log(images)
+//           } else {
+//               console.error('Failed to fetch images:', response.statusText);
+//           }
+//       } catch (error) {
+//           console.error('Failed to fetch images:', error);
+//       }
+//   };
+
+//     const handleViewNotePage = (noteId) => {
+//         setNoteId(noteId);
+//         setView('note');
+//         fetchImages(noteId);
+//     };
+
+
+//   const handleCreateNote = async (directoryId, title) => {
+//     try {
+//         const response = await axios.post(`${config.baseURL}/notes/create-note`, {
+//             directory_id: directoryId,
+//             title: title
+//         }, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         });
+//         if (response.status === 201) {
+//             alert('Note created successfully');
+//             setNotes([...notes, response.data.note]);
+//         } else {
+//             alert('Failed to create note');
+//         }
+//     } catch (error) {
+//         alert('Failed to create note');
+//     }
+// };
+
+// function CreateNoteForm({ directoryId, handleCreateNote }) {
+//     const [title, setTitle] = useState('');
+
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
+//         handleCreateNote(directoryId, title);
+//         setTitle('');
+//     };
+
+//     return (
+//         <form onSubmit={handleSubmit}>
+//             <input
+//                 type="text"
+//                 value={title}
+//                 onChange={(e) => setTitle(e.target.value)}
+//                 placeholder="Note Title"
+//                 required
+//             />
+//             <button type="submit">Create Note</button>
+//         </form>
+//     );
+// }
+
+//   const handleDeleteNote = async (noteId) => {
+//     try {
+//         const response = await axios.delete(`${config.baseURL}/notes/notes/${noteId}`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         });
+//         if (response.status === 200) {
+//             alert('Note deleted successfully');
+//             // Update the state to remove the deleted note from the list
+//             setNotes(notes.filter(note => note.id !== noteId));
+//             setImages([]);
+//             setNoteId(null);
+//         } else {
+//             alert('Failed to delete note');
+//         }
+//     } catch (error) {
+//         alert('Failed to delete note');
+//     }
+// };
+
+
+// const handleImageUpload = async (noteId, file) => {
+//     const formData = new FormData();
+//     formData.append('file', file);
+
+//     try {
+//         const response = await axios.post(`${config.baseURL}/images/upload-image/${noteId}`, formData, {
+//             headers: {
+//                 'Content-Type': 'multipart/form-data',
+//                 Authorization: `Bearer ${token}`
+//             }
+//         });
+//         if (response.status === 200) {
+//             alert('Image uploaded successfully');
+//             fetchImages(noteId); // Fetch the updated list of images
+//             // setImages([...images, response.data.image]); // Update the state with the new image
+//         } else {
+//             alert('Failed to upload image');
+//         }
+//     } catch (error) {
+//         console.error('Failed to upload image', error);
+//         alert('Failed to upload image');
+//     }
+// };
+// const handleImageDelete = async (noteId, imageId) => {
+//     try {
+//         const response = await axios.delete(`${config.baseURL}/images/delete-image/${noteId}/${imageId}`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         });
+//         if (response.status === 200) {
+//             alert('Image deleted successfully');
+//             fetchImages(noteId); // Fetch the updated list of images
+//         } else {
+//             alert('Failed to delete image');
+//         }
+//     } catch (error) {
+//         console.error('Failed to delete image', error);
+//         alert('Failed to delete image');
+//     }
+// };
+
+// const toggleSidebar = () => {
+//     setSidebarOpen(!sidebarOpen);
+// };
+
+// return (
+//     <div className="App">
+//         <div className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+//             <button onClick={toggleSidebar} className="toggle-btn">
+//                 <FontAwesomeIcon icon={faBars} />
+//             </button>
+//             <nav>
+//                 {token ? (
+//                     <>
+//                         <button onClick={() => handleNavClick('home')}>
+//                             <FontAwesomeIcon icon={faHome} />
+//                             {sidebarOpen && <span>Home</span>}
+//                         </button>
+//                         <button onClick={() => handleNavClick('create-directory')}>
+//                             <FontAwesomeIcon icon={faFolderPlus} />
+//                             {sidebarOpen && <span>Create Directory</span>}
+//                         </button>
+//                         <button onClick={() => handleNavClick('view-directories')}>
+//                             <FontAwesomeIcon icon={faFolderOpen} />
+//                             {sidebarOpen && <span>View Directories</span>}
+//                         </button>
+//                         <button onClick={() => handleNavClick('logout')}>
+//                             <FontAwesomeIcon icon={faSignOutAlt} />
+//                             {sidebarOpen && <span>Logout</span>}
+//                         </button>
+//                     </>
+//                 ) : (
+//                     <>
+//                         <button onClick={() => handleNavClick('register')}>
+//                             <FontAwesomeIcon icon={faUserPlus} />
+//                             {sidebarOpen && <span>Register</span>}
+//                         </button>
+//                         <button onClick={() => handleNavClick('login')}>
+//                             <FontAwesomeIcon icon={faSignInAlt} />
+//                             {sidebarOpen && <span>Login</span>}
+//                         </button>
+//                     </>
+//                 )}
+//             </nav>
+//         </div>
+//         <div className="content">
+//             {view === 'home' && <HomePage />}
+//             {view === 'register' && <RegisterForm handleRegister={handleRegister} setUsername={setUsername} setPassword={setPassword} />}
+//             {view === 'login' && <LoginForm handleLogin={handleLogin} setUsername={setUsername} setPassword={setPassword} />}
+//             {view === 'create-directory' && <DirectoryForm handleCreateDirectory={handleCreateDirectory} />}
+//             {view === 'view-directories' && <ViewDirectories directories={directories} handleViewDirectory={handleViewDirectory} handleDeleteDirectory={handleDeleteDirectory} />}
+//             {view === 'view-notes' && <ViewNotes notes={notes} directoryId={directoryId} CreateNoteForm={CreateNoteForm} handleViewNotePage={handleViewNotePage} handleDeleteNote={handleDeleteNote} handleCreateNote={handleCreateNote} />}
+//             {view === 'note' && <NotePage noteId={noteId} images={images} handleImageUpload={handleImageUpload} handleImageDelete = {handleImageDelete} />}
+//         </div>
+//     </div>
+// );
+// }
+
+// function HomePage() {
+// return <h1>Welcome to the Home Page</h1>;
+// }
+// function RegisterForm({ handleRegister,setUsername, setPassword }) {
+//   return (
+//     <div> 
+//         <h2>Register</h2>
+//         <form onSubmit={handleRegister}>
+//           <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
+//           <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+//           <button type="submit">Register</button>
+//       </form>
+//     </div>
+//   );
+// }
+
+// function LoginForm({ handleLogin , setUsername, setPassword}) {
+//   return (
+//       <div>
+//         <h2>Login</h2>
+//         <form onSubmit={handleLogin}>
+//           <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
+//           <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+//           <button type="submit">Login</button>
+//       </form>
+//       </div>
+//   );
+// }
+
+// function DirectoryForm({ handleCreateDirectory }) {
+//   return (
+//     <div>
+//         <h2>Create Directory</h2>
+//         <form onSubmit={handleCreateDirectory}>
+//           <input type="text" name="directory-name" placeholder="Directory Name" />
+//           <button type="submit">Create Directory</button>
+//       </form>
+//     </div>
+//   );
+// }
+
+// function ViewDirectories({ directories, handleViewDirectory ,handleDeleteDirectory }) {
+//   return (
+//       <div>
+//           <h2>Directories</h2>
+//           <ul>
+//               {directories.map((directory) => (
+//                   <li key={directory.id}>
+//                     <span onClick={() => handleViewDirectory(directory.id)}>{directory.name}</span>
+//                     <button onClick={() => handleDeleteDirectory(directory.id)}>Delete</button>
+//                   </li>
+//               ))}
+//           </ul>
+//       </div>
+//   );
+// }
+// function ViewNotes({ notes, directoryId,CreateNoteForm, handleViewNotePage, handleDeleteNote, handleCreateNote }) {
+//     return (
+//         <div>
+//             <h2>Notes</h2>
+//             <CreateNoteForm directoryId={directoryId} handleCreateNote={handleCreateNote} />
+//             <ul>
+//                 {notes.map((note) => (
+//                     <li key={note.id}>
+//                         <span onClick={() => handleViewNotePage(note.id)}>{note.title}</span>
+//                         <button onClick={() => handleDeleteNote(note.id)}>Delete</button>
+//                     </li>
+//                 ))}
+//             </ul>
+//         </div>
+//     );
+// }
+// function NotePage({ noteId, images, handleImageUpload ,handleImageDelete}) {
+//     const [file, setFile] = useState(null);
+
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
+//         if (file) {
+//             console.log(noteId, file);
+//             handleImageUpload(noteId, file);
+//             setFile(null);
+//         }
+//     };
+
+//     return (
+//         <div>
+//             <h2>Note Page</h2>
+//             <form onSubmit={handleSubmit}>
+//                 <input type="file" onChange={(e) => setFile(e.target.files[0])} required />
+//                 <button type="submit">Upload Image</button>
+//             </form>
+//             <div>
+//                 {images.map((image) => (                        
+//                     <div key={image.id}>
+//                             <img src={`${config.baseURL}/uploads/${image.filename}`} alt={image.filename} />
+//                             <button onClick={() => handleImageDelete(noteId, image.id)}>Delete</button>
+//                         </div>))}
+//             </div>
+//         </div>
+//     );
+// }
+
+// export default App;
