@@ -1,0 +1,65 @@
+/* src/App.css */
+.App {
+  display: flex;
+  height: 100vh; /* Make the App container take the full height of the viewport */
+  overflow: hidden; /* Prevent scrollbars on the App container itself */
+}
+
+.sidebar {
+  height: 100%; /* Make the sidebar take the full height of the parent container */
+  width: 250px;
+  transition: width 0.3s;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  position: fixed; /* Fix the sidebar to the left side of the viewport */
+  top: 0;
+  left: 0;
+  overflow-y: auto; /* Add vertical scrolling if the content overflows */
+  z-index: 1000; /* Ensure it stays on top */
+}
+
+.sidebar.closed {
+  width: 60px;
+}
+
+.sidebar .toggle-btn {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar nav button {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 5px 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sidebar nav button:hover {
+  background-color: #555;
+}
+
+.content {
+  margin-left: 250px; /* Adjust the content margin to account for the sidebar width */
+  flex-grow: 1;
+  padding: 20px;
+  transition: margin-left 0.3s;
+  overflow-y: scroll;
+}
+
+.sidebar.closed + .content {
+  margin-left: 60px; /* Adjust the content margin when the sidebar is closed */
+}
