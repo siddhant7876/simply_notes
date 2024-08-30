@@ -1,1 +1,46 @@
-frontend/node_modules/
+# Ignore node_modules in frontend
+/frontend/node_modules/
+
+# Ignore node_modules in backend (if applicable)
+/backend/node_modules/
+
+# Ignore environment variable files
+/.env
+/frontend/.env
+/backend/.env
+
+# Ignore logs
+/logs
+/frontend/logs
+/backend/logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore build output directories
+/dist
+/frontend/dist
+/backend/dist
+/build
+/frontend/build
+/backend/build
+
+# Ignore dependency directories for Python (if backend uses Python)
+/venv/
+/backend/venv/
+/__pycache__/
+/backend/__pycache__/
+/*.pyc
+/backend/*.pyc
+
+# Ignore MacOS specific files
+.DS_Store
+
+# Ignore IDE specific files
+/.vscode/
+/.idea/
+/*.suo
+/*.ntvs
+/*.njsproj
+/*.sln
